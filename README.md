@@ -27,6 +27,7 @@ The goals / steps of this project are the following:
 [image8]: ./output_images/bboxes_and_heat_5.png
 [image9]: ./output_images/bboxes_and_heat_6.png
 [video1]: ./output_images/project_video.gif
+[video2]: ./output_images/combo_video.gif
 
 ---
 
@@ -50,6 +51,10 @@ You will also need to have software installed to run and execute a [Jupyter Note
 - `helper_functions.py` - The script contained required helper functions.
 - `Vehicles.py` - The script contained a required Python class.
 - `README.md` - The writeup explained the image process pipeline and the project.
+
+- `combo-pipeline.ipynb` - The notebook for combined lane lines and vehicles detection.
+- `helpers_lanes.py` - The script contained required helper functions for lane lines.
+- `Line.py` - The script contained a required Python class for lane lines.
 
 ## Data
 
@@ -146,10 +151,24 @@ In order to fasten the process speed, the pipeline does a whole image HOG sub-sa
 
 The vehicle boundary boxes of recent 12 frames are stored in a Python `deque` object with a length of 12. The current boundary boxes are calculated from a thresholded heatmap of accumulated boundary boxes over the recent 12 frames. These steps did not only rule out false positives over frames, but also smooth the drawing of vehicle boundary boxes.
 
+### 3. Combined lane lines and vehicles detection.
+
+Here's a [link to my combined video result](https://youtu.be/HpSD8QF-xCo).
+
+And a GIF:
+
+![alt text][video2]
+
 ---
 
 ## Discussion
 
 ### 1. Briefly discuss any problems / issues.
 
-Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
+One issue of using HOG features for classifier is that many parameters have to be adjusted and modified manually over trials and errors, and this process is hard to become automated. Also the process is not transferable to other format of video or other circumstances because a new set of parameters have to be found.
+
+The vehicle data are only limited to sedans in this research. It doesn't include other types of vehicles such as trucks and motorcycles. But same strategy can be applied to broader selection of training data including more types of vehicles for practical usage.
+
+Neural networks can be used as a classifier to replace the linear SVM, and I would expect a better accuracy on that. But process speed can an issue because a neural network is kind of slow comparing to the linear SVM.
+
+Talking about the process speed, the current pipeline is still much slower than real time. I speed up the process by skipping frames, and a whole image window search is only performed every 12 frames. This brings up an issue that any new interested object driving into the image can only be detected with roughly half a second delay. This is a tradeoff between the process speed and the prompt detection ability.
