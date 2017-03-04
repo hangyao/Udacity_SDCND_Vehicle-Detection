@@ -4,6 +4,8 @@
 
 ## Udacity Self-Driving Car Nanodegree Project 4
 
+![alt text][video2]
+
 ---
 
 The scope of this project is to develop a pipeline to process a video stream from a forward-facing camera mounted on the front of a car, and output an annotated video which detects vehicles.
