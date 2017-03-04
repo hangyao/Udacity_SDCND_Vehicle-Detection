@@ -3,6 +3,7 @@ import numpy as np
 import cv2
 from tqdm import tqdm
 from skimage.feature import hog
+from scipy.ndimage.measurements import label
 
 # Define a function to return some characteristics of the dataset
 def data_look(car_list, notcar_list):
@@ -280,3 +281,45 @@ def draw_labeled_bboxes(img, labels):
         cars_bbox.append(bbox)
     # Return the image
     return img, cars_bbox
+
+def apply_heat(img, box_list):
+    heat = np.zeros_like(img[:,:,0]).astype(np.float)
+    heat = add_heat(heat, box_list)
+    heat = apply_threshold(heat, 2)
+    heatmap = np.clip(heat, 0, 255)
+    labels = label(heatmap)
+    _, car_bbox = draw_labeled_bboxes(np.copy(img), labels)
+    return car_bbox
+
+
+def pipeline(img, cars, ystarts, ystops, scales,
+                 svc, X_scaler, orient, pix_per_cell,
+                 cell_per_block, spatial_size, hist_bins):
+    box_list = []
+    cars.img = img
+    if (cars.frame % 12 == 0):
+        for ystart, ystop, scale in zip(ystarts, ystops, scales):
+            _, boxes = find_cars(img, ystart, ystop, scale,
+                         svc, X_scaler, orient, pix_per_cell,
+                         cell_per_block, spatial_size, hist_bins)
+            box_list.extend(boxes)
+        car_bbox = apply_heat(img, box_list)
+        draw_img = cars.draw_over_frames(car_bbox)
+
+    elif (cars.frame % 6 == 0) and (cars.new_ystop > 0):
+        new_ystops = [cars.new_ystop if x>cars.new_ystop else x for x in ystops]
+        k = len(scales)
+        for ystart, ystop, scale in zip(ystarts, new_ystops, scales):
+            _, boxes = find_cars(img, ystart, ystop, scale,
+                         svc, X_scaler, orient, pix_per_cell,
+                         cell_per_block, spatial_size, hist_bins)
+            box_list.extend(boxes)
+        car_bbox = apply_heat(img, box_list)
+        draw_img = cars.draw_over_frames(car_bbox)
+
+    else:
+        draw_img = draw_boxes(img, cars.current_bboxes)
+
+    cars.frame += 1
+
+    return draw_img
