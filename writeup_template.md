@@ -24,7 +24,7 @@ The goals / steps of this project are the following:
 [image7]: ./output_images/bboxes_and_heat_4.png
 [image8]: ./output_images/bboxes_and_heat_5.png
 [image9]: ./output_images/bboxes_and_heat_6.png
-[video1]: ./project_video.gif
+[video1]: ./output_images/project_video.gif
 
 ---
 
@@ -117,6 +117,8 @@ Here are some example images with sliding window scale of 1.5:
 
 Ultimately I searched on four scales using YCrCb 3-channel HOG features plus spatially binned color and histograms of color in the feature vector, which provided a nice result.
 
+Here is a table shown different `ystart` and `ystop` for different scales of sliding search window.
+
 |`Scale`|`ystart`|`ystop`|
 |:-----:|:------:|:-----:|
 | 1.0   |  400   |  496  |
@@ -141,18 +143,6 @@ And a GIF:
 I recorded the positions of positive detections in each frame of the video.  From the positive detections I created a heatmap and then thresholded that map to identify vehicle positions.  I then used `scipy.ndimage.measurements.label()` to identify individual blobs in the heatmap.  I then assumed each blob corresponded to a vehicle.  I constructed bounding boxes to cover the area of each blob detected.  
 
 Here's an example result showing the heatmap from a series of frames of video, the result of `scipy.ndimage.measurements.label()` and the bounding boxes then overlaid on the last frame of video:
-
-### Here are six frames and their corresponding heatmaps:
-
-![alt text][image5]
-
-### Here is the output of `scipy.ndimage.measurements.label()` on the integrated heatmap from all six frames:
-![alt text][image6]
-
-### Here the resulting bounding boxes are drawn onto the last frame in the series:
-![alt text][image7]
-
-
 
 ---
 
